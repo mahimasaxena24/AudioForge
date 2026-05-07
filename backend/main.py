@@ -500,7 +500,7 @@ def list_books(_: AuthUser = Depends(get_current_user)) -> list[BookResponse]:
 
 @app.get("/api/books/{book_id}", response_model=BookDetailResponse)
 def get_book_detail(book_id: str, _: AuthUser = Depends(get_current_user)) -> BookDetailResponse:
-
+    
     book = service.get_book(book_id)
 
     if not book:
@@ -513,7 +513,7 @@ def get_book_detail(book_id: str, _: AuthUser = Depends(get_current_user)) -> Bo
 
     for chapter in chapters:
         if chapter.get("audio_path"):
-            chapter["audio_path"] = (
+            chapter["audio_url"] = (
                 f"{settings.supabase_url}/storage/v1/object/public/audiobooks/"
                 f"{chapter['audio_path']}"
             )
