@@ -509,10 +509,24 @@ def list_books(_: AuthUser = Depends(get_current_user)) -> list[BookResponse]:
 
 @app.get("/api/books/{book_id}", response_model=BookDetailResponse)
 def get_book_detail(book_id: str, _: AuthUser = Depends(get_current_user)) -> BookDetailResponse:
+
     book = service.get_book(book_id)
+
     if not book:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
-    chapters = with_public_audio_paths(service.get_chapters(book_id))
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Book not found"
+        )
+
+    chapters = service.get_chapters(book_id)
+
+    for chapter in chapters:
+        if chapter.get("audio_path"):
+            chapter["audio_path"] = (
+                f"{settings.supabase_url}/storage/v1/object/public/audiobooks/"
+                f"{chapter['audio_path']}"
+            )
+
     return BookDetailResponse(
         book=BookResponse(**book),
         chapters=[ChapterResponse(**chapter) for chapter in chapters],
