@@ -1,0 +1,3 @@
+ALTER TABLE public.books
+  ADD COLUMN IF NOT EXISTS voice_id TEXT,
+  ADD COLUMN IF NOT EXISTS voice_name TEXT;

@@ -1,0 +1,10 @@
+project_id = "grjfntfeqgdazjjvtlkg"
+
+[functions.extract-text]
+verify_jwt = false
+
+[functions.convert-chapter]
+verify_jwt = false
+
+[functions.start-conversion]
+verify_jwt = false
