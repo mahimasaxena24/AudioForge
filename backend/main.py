@@ -69,7 +69,6 @@ class ChapterResponse(BaseModel):
     title: str
     text_content: str | None = None
     audio_path: str | None = None
-    audio_url: str | None = None
     duration: str | None = None
     status: str
     chapter_order: int
@@ -412,6 +411,16 @@ def fetch_elevenlabs_voices() -> list[VoiceOption]:
     ]
 
 
+def with_public_audio_paths(chapters: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    for chapter in chapters:
+        if chapter.get("audio_path"):
+            chapter["audio_path"] = (
+                f"{settings.supabase_url}/storage/v1/object/public/audiobooks/"
+                f"{chapter['audio_path']}"
+            )
+    return chapters
+
+
 def run_conversion_pipeline(book_id: str) -> None:
     try:
         logger.info("Starting conversion pipeline for book %s", book_id)
@@ -500,24 +509,10 @@ def list_books(_: AuthUser = Depends(get_current_user)) -> list[BookResponse]:
 
 @app.get("/api/books/{book_id}", response_model=BookDetailResponse)
 def get_book_detail(book_id: str, _: AuthUser = Depends(get_current_user)) -> BookDetailResponse:
-    
     book = service.get_book(book_id)
-
     if not book:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Book not found"
-        )
-
-    chapters = service.get_chapters(book_id)
-
-    for chapter in chapters:
-        if chapter.get("audio_path"):
-            chapter["audio_url"] = (
-                f"{settings.supabase_url}/storage/v1/object/public/audiobooks/"
-                f"{chapter['audio_path']}"
-            )
-
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
+    chapters = with_public_audio_paths(service.get_chapters(book_id))
     return BookDetailResponse(
         book=BookResponse(**book),
         chapters=[ChapterResponse(**chapter) for chapter in chapters],
@@ -526,7 +521,8 @@ def get_book_detail(book_id: str, _: AuthUser = Depends(get_current_user)) -> Bo
 
 @app.get("/api/books/{book_id}/chapters", response_model=list[ChapterResponse])
 def get_book_chapters(book_id: str, _: AuthUser = Depends(get_current_user)) -> list[ChapterResponse]:
-    return [ChapterResponse(**chapter) for chapter in service.get_chapters(book_id)]
+    chapters = with_public_audio_paths(service.get_chapters(book_id))
+    return [ChapterResponse(**chapter) for chapter in chapters]
 
 
 @app.post("/api/books/upload", response_model=BookResponse)

@@ -1,5 +1,4 @@
 const API_BASE = import.meta.env.VITE_API_URL || "/api";
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const TOKEN_KEY = "audioforge-token";
 
 export type UserRole = "admin" | "user";
@@ -191,11 +190,4 @@ export async function createUser(payload: CreateUserPayload) {
 
 export async function deleteUser(userId: string) {
   return request<void>(`/users/${userId}`, { method: "DELETE" });
-}
-
-export function getAudioUrl(audioPath: string) {
-  if (!SUPABASE_URL) {
-    return audioPath;
-  }
-  return `${SUPABASE_URL}/storage/v1/object/public/audiobooks/${audioPath}`;
 }

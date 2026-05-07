@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchBookWithChapters, getAudioUrl, DbChapter } from "@/lib/api";
+import { fetchBookWithChapters, DbChapter } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -92,7 +92,7 @@ const BookDetailPage = () => {
                     ref={audioRef}
                     controls
                     className="w-full"
-                    src={getAudioUrl(currentChapter.audio_path)}
+                    src={currentChapter.audio_path}
                     onTimeUpdate={handleTimeUpdate}
                   />
                 </div>

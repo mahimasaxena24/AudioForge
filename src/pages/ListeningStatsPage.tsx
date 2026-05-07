@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { DbBook, DbChapter, fetchBooks, fetchChapters, getAudioUrl } from "@/lib/api";
+import { DbBook, DbChapter, fetchBooks, fetchChapters } from "@/lib/api";
 import {
   loadProgress,
   getBookProgressPercent,
@@ -122,7 +122,7 @@ const ListeningStatsPage = () => {
   const startPlayback = (book: DbBook, chapter: DbChapter) => {
     if (!chapter.audio_path) return;
 
-    const src = getAudioUrl(chapter.audio_path);
+    const src = chapter.audio_path;
     let audio = audioRef.current;
 
     if (!audio) {
@@ -303,7 +303,7 @@ const BookListeningCard = ({
 
   const handleDownloadChapter = (chapter: DbChapter) => {
     if (!chapter.audio_path) return;
-    const url = getAudioUrl(chapter.audio_path);
+    const url = chapter.audio_path;
     const link = document.createElement("a");
     link.href = url;
     link.download = `${book.title || "audiobook"} - ${chapter.title || "chapter"}.mp3`;

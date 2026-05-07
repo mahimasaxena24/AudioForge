@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { DbBook, DbChapter, deleteBook, fetchChapters, getAudioUrl } from "@/lib/api";
+import { DbBook, DbChapter, deleteBook, fetchChapters } from "@/lib/api";
 
 interface BookCardProps {
   book: DbBook;
@@ -63,9 +63,8 @@ const BookCard = ({ book, onSelect }: BookCardProps) => {
         console.warn("No audio available for download");
         return;
       }
-      const url = getAudioUrl(chapter.audio_path);
       const link = document.createElement("a");
-      link.href = url;
+      link.href = chapter.audio_path;
       link.download = `${book.title || "audiobook"}.mp3`;
       document.body.appendChild(link);
       link.click();
